@@ -1,0 +1,24 @@
+schema: spec-driven
+
+# Project context
+# NOTE: `sdd-job` holds the shared, job-agnostic standards. Each job repo fills in its own
+# local docs/data-model.md (its config + persisted-state schema) and its own README; this
+# block references the shared sources instead of duplicating content here.
+context: |
+  Project specs (single source of truth): All artifact creation and implementation MUST follow
+  the project's technical context in docs/ and ai-specs/. Read and apply these when creating or
+  implementing:
+  - docs/base-standards.md — core principles, TDD, language standards, python-job architecture, links
+  - docs/job-standards.md — CLI/actions, config, logging, run modes, signals, state/persistence, testing, security
+  - docs/infrastructure-standards.md — deployment (systemd/cron/containers), log rotation, secrets
+  - docs/data-model.md — this job's configuration and persisted-state schema (local per job)
+  - docs/documentation-standards.md — docs structure and maintenance
+  For implementation: adopt the job-developer agent from ai-specs/agents/job-developer.md. Use
+  ai-specs/skills/ for workflow guidance when applicable.
+
+# Per-artifact rules
+rules:
+  _global:
+    - Before creating any artifact, read and apply docs/base-standards.md
+    - For job/code artifacts, read docs/job-standards.md and adopt guidelines from ai-specs/agents/job-developer.md
+    - Use docs/data-model.md for configuration/state consistency in specs and tasks
