@@ -16,9 +16,19 @@ context: |
   For implementation: adopt the job-developer agent from ai-specs/agents/job-developer.md. Use
   ai-specs/skills/ for workflow guidance when applicable.
 
-# Per-artifact rules
+# Per-artifact rules.
+# NOTE: openspec 1.5.0 keys rules by artifact id (proposal/design/specs/tasks) — there is no
+# `_global` bucket. The "read base-standards + job-standards first" rule is repeated per artifact.
 rules:
-  _global:
-    - Before creating any artifact, read and apply docs/base-standards.md
-    - For job/code artifacts, read docs/job-standards.md and adopt guidelines from ai-specs/agents/job-developer.md
-    - Use docs/data-model.md for configuration/state consistency in specs and tasks
+  proposal:
+    - Read and apply docs/base-standards.md and docs/job-standards.md before writing.
+    - Frame Why/What/Impact around the python-job architecture (CLI/actions, config, run modes, state); list capabilities as behavior contracts.
+  design:
+    - Read docs/base-standards.md and docs/job-standards.md; adopt guidelines from ai-specs/agents/job-developer.md.
+    - Justify decisions against job-standards rules (decision/execution separation, state mutated only on executed result, every declared flag honoured, secrets via environment only).
+  specs:
+    - Read docs/base-standards.md and docs/job-standards.md; use docs/data-model.md for configuration/persisted-state consistency.
+    - Write testable SHALL/MUST requirements, each with at least one WHEN/THEN scenario.
+  tasks:
+    - Read docs/base-standards.md and docs/openspec-tasks-mandatory-steps.md.
+    - Include the mandatory steps in order: feature branch (Step 0), failing test first (TDD), unit tests + persisted-state verification, manual --dry-run/one-shot verification, docs update.
