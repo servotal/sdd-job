@@ -139,6 +139,10 @@ A job MUST make explicit *which* action(s) it runs and over *which* target(s):
 
 ## Configuration
 
+> See the rational [rationals/setup-and-configuration.md](./rationals/setup-and-configuration.md)
+> for the full boot pattern (Environment → Config → Setup → Logger), the *why* behind it, and a
+> new-job checklist.
+
 - **Sources, in precedence order** (highest wins): explicit `--configfile` → environment-based
   file selection (`<JOB>_ENV` naming the environment, e.g. `config.<env>.yaml`) → discovered
   `configs/` directory. The resolution MUST be deterministic and logged at startup (which file
