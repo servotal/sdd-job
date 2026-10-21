@@ -115,17 +115,17 @@ job:
   config file, and never written to logs.**
 - Secrets are **per environment**; a value valid in one environment MUST NOT be reused or synced
   to another.
-- If a secret is ever committed, it MUST be **rotated**, not merely deleted from history. (The
-  reference job shipped a live API key in a committed config file — exactly the failure mode
-  this rule exists to prevent.)
+- If a secret is ever committed, it MUST be **rotated**, not merely deleted from history. (A
+  live API key in a committed config file is exactly the failure mode this rule exists to
+  prevent.)
 
 ## Logging & rotation
 
 - The job writes a rotating operational log (see
   [Job Standards](./job-standards.md#logging)). Under systemd, stdout/stderr also land in the
   journal (`journalctl -u <job>@<env>`).
-- Log rotation MUST be configured — either the job's own `RotatingFileHandler` (size-based, as
-  the reference job uses) or `logrotate` for any plain file it writes — so disk cannot fill.
+- Log rotation MUST be configured — either the job's own `RotatingFileHandler` (size-based) or
+  `logrotate` for any plain file it writes — so disk cannot fill.
 - Logs MUST NOT contain secrets.
 
 ## CI/CD
