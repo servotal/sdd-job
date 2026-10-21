@@ -30,9 +30,9 @@ A **python job** in this repo is a long-running or batch process driven from the
 it loads configuration, initialises logging and runtime setup, then executes **one or several
 actions** against one or more targets. It is **not** a web service and **not** a request/response
 API — there is no HTTP framework, no message bus, and no frontend. The canonical reference
-implementation these standards are extracted from is the Mandarina trading bot
-(`mandarina_bot`), but the patterns here are **job-agnostic**: an ETL loader, a reconciliation
-batch, a poller, a scheduled report generator, or a trading loop all share the same skeleton.
+implementation these standards are extracted from is an example trading bot (`example_job`),
+but the patterns here are **job-agnostic**: an ETL loader, a reconciliation batch, a poller,
+a scheduled report generator, or a trading loop all share the same skeleton.
 
 The job MUST be organised so that **decision logic is separated from side effects**: a pure,
 testable core decides *what* to do, and a thin execution/adapter layer performs the I/O. This
