@@ -13,8 +13,7 @@ adds it as a **git submodule** (it is not copied) and exposes its content at the
 symlinks. Anything that is specific to a given job (its configuration, its persisted-state model,
 its actions) is created **locally in that job**, never here.
 
-The reference job these standards were extracted from is a trading bot (`example_job`), but the
-standards are **job-agnostic**: `docs/job-standards.md` describes the skeleton
+These standards are **job-agnostic**: `docs/job-standards.md` describes the skeleton
 (`core` → command/adapter → pure decision core → persisted state), not any one job's domain.
 
 ## What it resolves vs the original specboot
@@ -237,9 +236,3 @@ cd sdd-job && git pull origin main && cd ..
 git add sdd-job
 git commit -m "chore: bump sdd-job submodule"
 ```
-
-## Origin
-
-SDD base for python-job projects. Extracted and generalized from a reference trading-bot job
-(`example_job`), which serves as the example of a local job that consumes this repo as a
-submodule.

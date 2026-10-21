@@ -9,7 +9,7 @@ job's own `docs/` (never edited here).
 - **Python 3.10+** (3.12+ RECOMMENDED for new jobs)
 - The job's chosen **package/env manager**, used consistently — one of:
   - **[uv](https://docs.astral.sh/uv/)** (RECOMMENDED for new jobs), or
-  - **pipenv** (`Pipfile`/`Pipfile.lock`), as the reference job uses.
+  - **pipenv** (`Pipfile`/`Pipfile.lock`).
 
   Do not mix bare `pip`, `poetry`, and `pipenv` in the same job.
 - **Git**
@@ -35,7 +35,7 @@ pipenv install --dev
 
 ### 2. Environment variables
 
-A job selects its environment with `<JOB>_ENV` (e.g. `EXAMPLE_JOB_ENV=local`) and reads
+A job selects its environment with `<JOB>_ENV` (e.g. `local`, `staging`, `prod`) and reads
 **secrets from the environment only** — never from committed config. Keep them in a local,
 untracked env file:
 
@@ -81,7 +81,7 @@ python -m <job_package> -l INFO <subcommand> --live --interval-seconds 15
 uv run ruff check .
 uv run mypy .
 uv run pytest                    # full suite
-uv run pytest -q test            # the reference job keeps tests under test/
+uv run pytest -q test            # if the job keeps its tests under test/
 uv run pytest --cov              # with coverage
 ```
 

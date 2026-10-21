@@ -29,10 +29,9 @@
 A **python job** in this repo is a long-running or batch process driven from the command line:
 it loads configuration, initialises logging and runtime setup, then executes **one or several
 actions** against one or more targets. It is **not** a web service and **not** a request/response
-API — there is no HTTP framework, no message bus, and no frontend. The canonical reference
-implementation these standards are extracted from is an example trading bot (`example_job`),
-but the patterns here are **job-agnostic**: an ETL loader, a reconciliation batch, a poller,
-a scheduled report generator, or a trading loop all share the same skeleton.
+API — there is no HTTP framework, no message bus, and no frontend. The patterns here are
+**job-agnostic**: an ETL loader, a reconciliation batch, a poller, a scheduled report
+generator, or a trading loop all share the same skeleton.
 
 The job MUST be organised so that **decision logic is separated from side effects**: a pure,
 testable core decides *what* to do, and a thin execution/adapter layer performs the I/O. This
@@ -61,8 +60,8 @@ credentials or a live target system.
 - **pytest** for all tests (`pytest-cov` for coverage). No live network in unit tests.
 - **Linting/formatting**: `ruff` (lint + format). Static typing: `mypy` (strict where practical).
 - **Package/env manager**: one per project, declared and used consistently — `uv` (RECOMMENDED
-  for new jobs) or `pipenv`/`Pipfile` (as the reference job uses). Contributors MUST use the
-  project's chosen manager, not a mix of bare `pip`, `poetry`, and `pipenv`.
+  for new jobs) or `pipenv`/`Pipfile`. Contributors MUST use the project's chosen manager, not
+  a mix of bare `pip`, `poetry`, and `pipenv`.
 
 ## Architecture Overview
 
@@ -102,8 +101,8 @@ job-framework-specific, and adapters depend on the core, never the reverse:
 - **State mutation MUST follow real execution, not intent.** Persisted state MUST be updated
   from the *result* of an executed side effect (a confirmed fill/result), never speculatively
   from a decision that a later guard can still abort. Speculative state writes are a defect:
-  in the reference job they left counters that no execution ever backed, permanently wedging
-  those targets. See [State and Persistence](#state-and-persistence).
+  they leave counters that no execution ever backed, permanently wedging those targets. See
+  [State and Persistence](#state-and-persistence).
 
 ## CLI and Actions
 
@@ -121,8 +120,8 @@ job-framework-specific, and adapters depend on the core, never the reverse:
 A job MUST make explicit *which* action(s) it runs and over *which* target(s):
 
 - **Action family = subcommand.** Each subcommand groups the actions for one integration/target
-  family (in the reference job, one per exchange). A subcommand MUST be required unless the job
-  has exactly one; if none is given, print help to stderr and exit non-zero.
+  family (for example, one per exchange or per upstream API). A subcommand MUST be required
+  unless the job has exactly one; if none is given, print help to stderr and exit non-zero.
 - **Action mode = flags** on the subcommand (or global), e.g. a live loop (`--live`), a
   one-shot check (`--check`), a status snapshot (`-S`), a dashboard (`-D`). Modes MUST be
   documented in the job's own README and MUST be mutually coherent (a mode that only reports
@@ -130,12 +129,12 @@ A job MUST make explicit *which* action(s) it runs and over *which* target(s):
 - **Single vs multiple targets.** The command layer MUST support running against **one target
   or many** in a single invocation: an explicit `--targets`/`--symbols` list, a configured set,
   or a runtime-overridable list. Target resolution order MUST be documented and deterministic
-  (CLI > runtime overrides > configured set > config default, as the reference job does).
+  (CLI > runtime overrides > configured set > config default).
 - **Every declared flag MUST do something.** A safety or mode flag that is parsed but never
-  read is a defect (the reference job shipped `--no-buys`/`--no-sells`/`--check` that were
-  wired into `argparse` but dead in the execution path — a live operator relying on them would
-  be misled). If a flag is declared it MUST be honoured in the code path it claims to govern,
-  and covered by a test.
+  read is a defect: a flag such as `--no-buys`, `--no-sells`, or `--check` that is wired into
+  `argparse` but dead in the execution path misleads a live operator who relies on it. If a
+  flag is declared it MUST be honoured in the code path it claims to govern, and covered by a
+  test.
 
 ## Configuration
 
@@ -210,9 +209,10 @@ A job MUST make explicit *which* action(s) it runs and over *which* target(s):
   and never crash the job on a corrupt file (log and continue with a fresh in-memory record).
 - Records SHOULD be dataclasses with explicit defaults so a missing field deserialises to a
   sane value.
-- **The golden rule (repeated because the reference job violated it):** update state from the
-  **confirmed result of an executed side effect**, in the result-handler (`on_fill`-style), not
-  from the decision. If execution is skipped or aborted by any guard, state MUST be unchanged.
+- **The golden rule (repeated because it is the easiest one to get wrong):** update state from
+  the **confirmed result of an executed side effect**, in the result-handler (`on_fill`-style),
+  not from the decision. If execution is skipped or aborted by any guard, state MUST be
+  unchanged.
 - State is the job's memory across restarts; it MUST be safe to stop and restart the job at any
   point without double-acting or losing the position/progress it had.
 
@@ -261,9 +261,9 @@ A job MUST make explicit *which* action(s) it runs and over *which* target(s):
   respected, sells clamped to available quantity), and **state mutated only on executed
   results**.
 - **AAA** structure; behavioural test names: `test_<unit>_<condition>_<expected>`.
-- A green suite is a completion gate. If the reference job's own suite has known-failing tests
-  (e.g. an assertion that an adapter is called exactly once while the code calls it twice),
-  treat that as a real defect surfaced by the test, not as a test to relax.
+- A green suite is a completion gate. If the suite has known-failing tests (e.g. an assertion
+  that an adapter is called exactly once while the code calls it twice), treat that as a real
+  defect surfaced by the test, not as a test to relax.
 
 ## Packaging and Dependencies
 
@@ -289,10 +289,10 @@ doc relies on:
 ## Security Best Practices
 
 - **Secrets via environment/secret manager only.** API keys, tokens, and passwords MUST NOT be
-  committed to config files or the repo, and MUST NOT be written to logs. The reference job
-  shipped a live API key in `config.<env>.yaml`; a job following these standards keeps only the
-  *reference* to a secret in config and reads the value from the environment. If a secret is
-  ever committed, it MUST be rotated, not just deleted from the file.
+  committed to config files or the repo, and MUST NOT be written to logs. Config keeps only
+  the *reference* to a secret (its name) and the value is read from the environment — a live
+  API key in `config.<env>.yaml` is a defect. If a secret is ever committed, it MUST be
+  rotated, not just deleted from the file.
 - Least privilege for the credentials the job uses against its target system.
 - Runtime overrides and any operator-writable control file MUST be validated before use; a
   malformed control file MUST NOT be able to make the job take an unintended side effect.
