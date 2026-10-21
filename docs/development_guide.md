@@ -35,13 +35,13 @@ pipenv install --dev
 
 ### 2. Environment variables
 
-A job selects its environment with `<JOB>_ENV` (e.g. `MANDARINA_ENV=local`) and reads
+A job selects its environment with `<JOB>_ENV` (e.g. `EXAMPLE_JOB_ENV=local`) and reads
 **secrets from the environment only** — never from committed config. Keep them in a local,
 untracked env file:
 
 ```bash
 # .env (local only, never committed) — source it before running
-export MANDARINA_ENV=local
+export <JOB>_ENV=local
 export <JOB>_API_KEY=...        # secret value, referenced by name in config, valued here
 export <JOB>_API_SECRET=...
 ```
